@@ -2,6 +2,7 @@
 #include "Card.h"
 #include "Deck.h"
 #include "Gameboard.h"
+#include "omp.h"
 
     /**
      * This class is the main solitaire game class. It uses the classes Deck, Card, and Tableau to
@@ -10,8 +11,8 @@
      * @version February 17 2019
      */
     Solitaire::Solitaire(int type) {
-        Deck d = Deck();
-        vector<Card> *deck = d.getDeck();
+       // Deck d = Deck();
+        //vector<Card> *deck = d.getDeck();
 
         double overall_Count = 0;
         double overall_Probability = 0;
@@ -20,7 +21,7 @@
         vector<double> *probabilities = new vector<double>();
         vector<double> *execution = new vector<double>();
         int NumberOfSimulations = 5;
-        int NumberOfGames = 100;
+        int NumberOfGames = 100000;
 
         //Repsonsible for looping through and doing a specified number of rounds
         for(int j = 0; j<NumberOfSimulations;j++) {
@@ -30,9 +31,14 @@
             double seconds = 0;
             double numberOfMoves = 0;
 
+//        #pragma omp parallel
+//        #pragma omp for
+#pragma omp parallel for
             //Responsible for looping through the number Of games
-            while (i < NumberOfGames) {
-
+            //while (i < NumberOfGames) {
+            for(int a =0; a < NumberOfGames;a++){
+                Deck d = Deck();
+                vector<Card> *deck = d.getDeck();
                 //Starts the clock to measure run time of a game
                 time_t begin = clock();
                 srand(time(0));
@@ -381,12 +387,14 @@
      * @param argv argument variable
      */
     int main(int argc, char** argv) {
-        int i = 0;
-        cout << "What type of game would you like to play?\n  0 - Normal\n  1 - Guaranteed Win\n  2 - Guaranteed Loss" << endl;
-        cin >> i;
-        if (i == 0 || i == 1 || i == 2)
-            Solitaire s = Solitaire(i);
-        else
-            return 1;
+
+//#pragma omp parallel
+//        int i = 0;
+//        cout << "What type of game would you like to play?\n  0 - Normal\n  1 - Guaranteed Win\n  2 - Guaranteed Loss" << endl;
+//        cin >> i;
+//        if (i == 0 || i == 1 || i == 2)
+            Solitaire s = Solitaire(0);
+//        else
+//            return 1;
         return 0;
     }
